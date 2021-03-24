@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<!--want to have trackers as list of habits to search for in the file-->
+<IDs>exercise,code,study,mindfulness</IDs>
+
+<date id="13/01/21">
+  <exercise>04:00:00</exercise>
+  <code>01:30:20</code>
+</date>
+
+
+<date id="01/03/21">
+  <code>09:00:00</code>
+  <exercise>01:00:20</exercise>
+</date>
+
+<date id="08/03/21">
+  <mindfulness>00:30:00</mindfulness>
+  <study>00:20:00</study>
+  <code>01:20:00</code>
+</date>
