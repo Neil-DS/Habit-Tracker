@@ -85,7 +85,34 @@ class App():
                                                         xOff+50, yOff+50,
                                                         fill='pink', outline='yellow')
 
+        rectSize = 22
+
         #how are boxes related to the info in the file?
+        #relate the box on screen to a date
+        
+        
+        #between 0-17 rectsize(15)+2(spacing) is the first column
+        #between 0-17 is the first row
+        #row 2 column 3 is where the first value i currently have something
+        print(self.root.winfo_x(), self.root.winfo_y(), self.frame.winfo_x(), self.frame.winfo_y(), self.canvas.winfo_x(), self.canvas.winfo_y())
+        
+        #now you know how each row is related to a box on screen.
+        column = int((self.canvas.winfo_pointerx() - self.root.winfo_x() - self.frame.winfo_x())/rectSize)
+        row = int((self.canvas.winfo_pointery() - self.root.winfo_y() - self.frame.winfo_y())/rectSize)
+        
+        #how do i know which month I'm in? also weeks overlap in months. there's a 6th week in jan which is the same as first week in feb.
+        month = int(column/6)
+        
+        print('Column: ', column,
+              'Row: ', row)
+
+        #now I need how each box is related to the date
+        #01/01/21 should be c:0r:5
+        #should be able to access it from the cal?
+        datesCal = calendar.Calendar(6).yeardatescalendar(2021, width=12)
+
+        print(datesCal[0][month][column%6][row])
+        
         self.popupHandleText = self.canvas.create_text(xOff+15, yOff+15, text=self.dateMap['13/01/21'] )   
         
 
@@ -101,13 +128,14 @@ class App():
     #drawing currently just puts all the months into a straight line and kinda of seperates the months/days/week with some spacing
     def getDays(self):
          c = calendar.Calendar(6) #6=sunday first day of week
-         cal1 = c.yeardatescalendar(2021, width=12)
+         datesCal = c.yeardatescalendar(2021, width=12)
          cal = c.yeardayscalendar(2021, width=12)
 
-         rectSize = 15
+         rectSize = 20
          rectSpacing = rectSize + 2
-         monthSpacing = 0 #base month spacing determined by how many days and size of rects etc
-         spaceBetweenMonths = 2 #additional spacing between months, more like rectspacing
+         monthSpacing = 0 #base month spacing determined by how many days and size of rects etc(this will always start at 0) unless you want to offset
+         #the drawing from the canvas(from the left) by some amount of pixels for some reason.
+         spaceBetweenMonths = 2 #additional spacing between each month
 
          self.fillColor = '#AAFFAA' #will want to change the fillcolor by day depending on how much activity was done
          outlineColor = 'black'
@@ -122,11 +150,15 @@ class App():
          #draw the structure based on that info, keeping in mind being able to find each block efficiently with the mouse.
 
          print('--------------START OF MAP STRUCTURE-------------\n')
-         print(cal1[0][0][0])
+         #datescal has the date info you need. need to relate it to a draw box + add info
+         #print(datesCal[0][0], len(datesCal[0][0]))
+
+         
+         
 
 
 
-         print('--------------END OF MAP STRUCTURE-------------\n')
+         print('\n--------------END OF MAP STRUCTURE-------------')
 
          
 
