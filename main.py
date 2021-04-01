@@ -47,7 +47,7 @@ class App():
         self.frame.pack_propagate(False)
         self.root.geometry('1240x960+100+100')
         self.root.attributes("-transparentcolor", 'gray75')
-        self.frame.pack()
+        self.frame.grid(column=0, row=0)
         self.canvas = tk.Canvas(self.frame, height=240, width=960, borderwidth=0, bg='gray75', highlightbackground='gray75')
         self.canvas.grid(column=0, row=0, sticky=(tk.N, tk.W, tk.E, tk.S))
 
@@ -70,50 +70,56 @@ class App():
         print(self.dateMap)
         self.getDays()
 
-    #want to display the info of the box hovered over after sitting still-ish within a box.
-    def popupthing(self):
-        print('hey')
 
-    #need to get the info of a specific box
-    def on_enter(self, event):
-        self.t = Timer(1.0, self.popupthing)
-        self.t.start()
+
+    #right now this checks the see if you're in a box when you collide with the application canvas
+    #you'll want to change it so that it'll check to see if you're in the same boxes dimensions when you move the mouse, or possibly every frame.
+    def popupthing(self, display):
         xOff = self.canvas.winfo_pointerx() - (self.root.winfo_x() + self.frame.winfo_x())
         yOff = self.canvas.winfo_pointery() - (self.root.winfo_y() + self.frame.winfo_y()) 
         
         self.popupHandle = self.canvas.create_rectangle(xOff, yOff,
-                                                        xOff+50, yOff+50,
+                                                        xOff+100, yOff+50,
                                                         fill='pink', outline='yellow')
+        
+        self.popupHandleText = self.canvas.create_text(xOff+30, yOff+15, text=display)   
 
-        rectSize = 22
-
-        #how are boxes related to the info in the file?
-        #relate the box on screen to a date
-        
-        
-        #between 0-17 rectsize(15)+2(spacing) is the first column
-        #between 0-17 is the first row
-        #row 2 column 3 is where the first value i currently have something
-        print(self.root.winfo_x(), self.root.winfo_y(), self.frame.winfo_x(), self.frame.winfo_y(), self.canvas.winfo_x(), self.canvas.winfo_y())
-        
-        #now you know how each row is related to a box on screen.
-        column = int((self.canvas.winfo_pointerx() - self.root.winfo_x() - self.frame.winfo_x())/rectSize)
-        row = int((self.canvas.winfo_pointery() - self.root.winfo_y() - self.frame.winfo_y())/rectSize)
-        
-        #how do i know which month I'm in? also weeks overlap in months. there's a 6th week in jan which is the same as first week in feb.
-        month = int(column/6)
-        
-        print('Column: ', column,
-              'Row: ', row)
-
-        #now I need how each box is related to the date
-        #01/01/21 should be c:0r:5
-        #should be able to access it from the cal?
+    #need to get the info of a specific box
+    def on_enter(self, event):
         datesCal = calendar.Calendar(6).yeardatescalendar(2021, width=12)
+        rectSize = 22 #there is also extra padding for months that overlap with weeks which is not accounted for.  
+  
+        #for shifting the screen by 2 pixels for every month, so that finding which column doesn't slowly get out of sync
+        addPixels = 0 
+        monthTotal = self.root.winfo_x()
 
-        print(datesCal[0][month][column%6][row])
+        for month in datesCal[0]:
+            monthTotal += 22*(len(month)-1)
+            if(monthTotal < self.canvas.winfo_pointerx()):               
+                addPixels += 2
+            
         
-        self.popupHandleText = self.canvas.create_text(xOff+15, yOff+15, text=self.dateMap['13/01/21'] )   
+        #need to account for the space between months.
+        #every month another 2 pixels of padding is added.       
+        column = int((self.canvas.winfo_pointerx()-addPixels - self.root.winfo_x() - self.frame.winfo_x())/rectSize)
+        row = int((self.canvas.winfo_pointery() - self.root.winfo_y() - self.frame.winfo_y())/rectSize)
+
+        #calculating how many pixels to add to off set according to months
+        ActualMonth = 0       
+        for month in datesCal[0]:
+            if(len(month) <= column):
+                column = column - len(month) + 1
+                ActualMonth += 1
+            else:
+                break
+            
+
+        print("Date: {!s}".format(datesCal[0][ActualMonth][column][row]))
+        self.t = Timer(1.0, self.popupthing, [datesCal[0][ActualMonth][column][row]])
+        self.t.start()
+        
+        
+        #
         
 
     def on_leave(self, event):
