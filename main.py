@@ -86,7 +86,7 @@ class App():
 
     #need to get the info of a specific box
     def on_enter(self, event):
-        datesCal = calendar.Calendar(6).yeardatescalendar(2021, width=12)
+        datesCal = calendar.Calendar(6).yeardatescalendar(2021, width=12)       
         rectSize = 22 #there is also extra padding for months that overlap with weeks which is not accounted for.  
   
         #for shifting the screen by 2 pixels for every month, so that finding which column doesn't slowly get out of sync
@@ -115,11 +115,19 @@ class App():
             
 
         print("Date: {!s}".format(datesCal[0][ActualMonth][column][row]))
-        self.t = Timer(1.0, self.popupthing, [datesCal[0][ActualMonth][column][row]])
+        
+        #should really just save the file as the python datetime format to save you from having to convert this~
+        dateString = "{!s}".format(datesCal[0][ActualMonth][column][row])
+        hey = dateString.split("-")
+        dateString = "{}/{}/{}".format(hey[2], hey[1], hey[0][2:4])
+        print(dateString)
+
+        try:
+            self.t = Timer(1.0, self.popupthing, [self.dateMap[dateString]])
+        except KeyError:
+            self.t = Timer(1.0, self.popupthing, [datesCal[0][ActualMonth][column][row]])            
+        
         self.t.start()
-        
-        
-        #
         
 
     def on_leave(self, event):
