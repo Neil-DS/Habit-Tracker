@@ -79,10 +79,12 @@ class App():
         yOff = self.canvas.winfo_pointery() - (self.root.winfo_y() + self.frame.winfo_y()) 
         
         self.popupHandle = self.canvas.create_rectangle(xOff, yOff,
-                                                        xOff+100, yOff+50,
+                                                        xOff+(5*len(str(display))), yOff+50,
                                                         fill='pink', outline='yellow')
         
-        self.popupHandleText = self.canvas.create_text(xOff+30, yOff+15, text=display)   
+        self.popupHandleText = self.canvas.create_text(xOff+(2.5*len(str(display))), yOff+15, text=display)
+
+        print('display length: ', len(str(display)))
 
     #need to get the info of a specific box
     def on_enter(self, event):
